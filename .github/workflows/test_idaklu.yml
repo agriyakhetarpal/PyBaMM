@@ -13,11 +13,11 @@ jobs:
         with:
           python-version: 3.11
 
-      - name: Install dependencies with Homebrew
-        run: brew install sundials
+      # - name: Install dependencies with Homebrew
+      #   run: brew install sundials
 
-      - name: List installation location for SUNDIALS
-        run: brew --prefix sundials
+      # - name: List installation location for SUNDIALS
+      #   run: brew --prefix sundials
 
       - name: Install prerequisites
         run: pip install --upgrade pip setuptools wheel
