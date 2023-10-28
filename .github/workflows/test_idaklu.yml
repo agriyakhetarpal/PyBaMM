@@ -1,0 +1,32 @@
+name: Test PyBaMM's IDAKLU solver import on macOS
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  solver_import_on_macos:
+    runs-on: macos-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies with Homebrew
+        run: brew install sundials
+
+      - name: Install prerequisites
+        run: pip install --upgrade pip setuptools wheel
+
+      - name: Install PyBaMM from PyPI
+        run: pip install --pre pybamm[all]
+
+      # Fail if the output is not True
+      - name: Test IDAKLU solver import
+        run: python -c 'from pybamm import have_idaklu; print(have_idaklu())' | grep "True"
+
+      # Run even if the previous step fails
+      - name: Debug if IDAKLU solver import
+        if: always()
+        run: python -c "import pybamm; import importlib; idaklu_spec = importlib.util.find_spec('pybamm.solvers.idaklu'); idaklu = importlib.util.module_from_spec(idaklu_spec)"
