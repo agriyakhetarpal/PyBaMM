@@ -16,6 +16,9 @@ jobs:
       - name: Install dependencies with Homebrew
         run: brew install sundials
 
+      - name: List installation location for SUNDIALS
+        run: brew --prefix sundials
+
       - name: Install prerequisites
         run: pip install --upgrade pip setuptools wheel
 
@@ -27,6 +30,10 @@ jobs:
         run: python -c 'from pybamm import have_idaklu; print(have_idaklu())' | grep "True"
 
       # Run even if the previous step fails
-      - name: Debug if IDAKLU solver import
+      - name: Debug IDAKLU solver import
         if: always()
-        run: python -c "import pybamm; import importlib; idaklu_spec = importlib.util.find_spec('pybamm.solvers.idaklu'); idaklu = importlib.util.module_from_spec(idaklu_spec)"
+        run: python -c "import pybamm; import importlib; idaklu_spec = importlib.util.find_spec('pybamm.solvers.idaklu'); idaklu = importlib.util.module_from_spec(idaklu_spec); print(idaklu_spec); print(idaklu)"
+
+      - name: Run otool on IDAKLU solver
+        if: always()
+        run: otool -L $(python -c "import pybamm; import importlib; idaklu_spec = importlib.util.find_spec('pybamm.solvers.idaklu'); print(idaklu_spec.loader.path)")
