@@ -60,10 +60,6 @@ pybind11_add_module(idaklu
   pybamm/solvers/c_solvers/idaklu.cpp
 )
 
-if (NOT DEFINED USE_PYTHON_CASADI)
-  set(USE_PYTHON_CASADI TRUE)
-endif()
-
 # Use importlib to find the casadi path without importing it. This is useful
 # to find the path for the build-time dependency, not the run-time dependency.
 execute_process(
@@ -72,19 +68,11 @@ execute_process(
     OUTPUT_VARIABLE CASADI_DIR
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-if (CASADI_DIR)
-  file(TO_CMAKE_PATH ${CASADI_DIR} CASADI_DIR)
-  message("Found Python casadi path: ${CASADI_DIR}")
-endif()
+file(TO_CMAKE_PATH ${CASADI_DIR} CASADI_DIR)
+message("Found Python casadi path: ${CASADI_DIR}")
 
-if(${USE_PYTHON_CASADI})
-  message("Trying to link against Python casadi package")
-  find_package(casadi CONFIG PATHS ${CASADI_DIR} REQUIRED NO_DEFAULT_PATH)
-else()
-  message("Trying to link against any casadi package apart from the Python one")
-  set(CMAKE_IGNORE_PATH "${CASADI_DIR}/cmake")
-  find_package(casadi CONFIG REQUIRED)
-endif()
+message("Trying to link against Python casadi package")
+find_package(casadi CONFIG PATHS ${CASADI_DIR} REQUIRED NO_DEFAULT_PATH)
 
 set_target_properties(
   idaklu PROPERTIES

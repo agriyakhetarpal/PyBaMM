@@ -2,7 +2,6 @@
   "name": "pybamm",
   "version-string": "23.9",
   "dependencies": [
-    "casadi",
     {
       "name": "sundials",
       "default-features": false,

@@ -84,16 +84,10 @@ class CMakeBuild(build_ext):
         if not self.extensions:
             return
 
-        if system() == "Windows":
-            use_python_casadi = False
-        else:
-            use_python_casadi = True
-
         build_type = os.getenv("PYBAMM_CPP_BUILD_TYPE", "RELEASE")
         cmake_args = [
             "-DCMAKE_BUILD_TYPE={}".format(build_type),
             "-DPYTHON_EXECUTABLE={}".format(sys.executable),
-            "-DUSE_PYTHON_CASADI={}".format("TRUE" if use_python_casadi else "FALSE"),
         ]
         if self.suitesparse_root:
             cmake_args.append(
