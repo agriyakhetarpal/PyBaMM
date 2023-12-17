@@ -65,5 +65,3 @@ RUN if [ -z "$IDAKLU" ] \
     && [ -z "$ALL" ]; then \
     pip install --user -e ".[all,dev,docs]"; \
     fi
-
-ENTRYPOINT ["/bin/bash"]
