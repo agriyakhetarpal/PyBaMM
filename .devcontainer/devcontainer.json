@@ -2,7 +2,7 @@
     "name": "PyBaMM",
     "build": {
         "dockerfile": "../scripts/Dockerfile",
-        "context": ".."
+        "context": "."
     },
     "features": {
         "ghcr.io/devcontainers/features/git:1": {}
