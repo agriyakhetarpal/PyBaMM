@@ -1,4 +1,0 @@
-Plot
-====
-
-.. autofunction:: pybamm.plot
