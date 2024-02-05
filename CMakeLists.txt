@@ -79,6 +79,20 @@ endif()
 
 if(${USE_PYTHON_CASADI})
   message("Trying to link against Python casadi package")
+
+# Windows error:
+# CMake Error at C:/Users/runneradmin/AppData/Local/Temp/cibw-run-zffsr_52/cp38-win_amd64/build/venv/Lib/site-packages/casadi/cmake/casadi-targets.cmake:74 (message):
+# The imported target "casadi" references the file
+#  "C:/Users/runneradmin/AppData/Local/Temp/cibw-run-zffsr_52/cp38-win_amd64/build/venv/Lib/site-packages/casadi/libcasadi.lib"
+
+# but casadi.lib exists instead of libcasadi.lib, so if on Windows, we need to
+# remove the lib prefix from the library names
+  if(WIN32)
+    set(CMAKE_FIND_LIBRARY_PREFIXES "")
+    set(CMAKE_SHARED_LIBRARY_PREFIX "")
+    set(CMAKE_STATIC_LIBRARY_PREFIX "")
+  endif()
+
   find_package(casadi CONFIG PATHS ${CASADI_DIR} REQUIRED NO_DEFAULT_PATH)
 else()
   message("Trying to link against any casadi package apart from the Python one")

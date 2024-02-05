@@ -86,10 +86,7 @@ class CMakeBuild(build_ext):
         # Build in parallel wherever possible
         os.environ["CMAKE_BUILD_PARALLEL_LEVEL"] = str(cpu_count())
 
-        if system() == "Windows":
-            use_python_casadi = False
-        else:
-            use_python_casadi = True
+        use_python_casadi = True
 
         build_type = os.getenv("PYBAMM_CPP_BUILD_TYPE", "RELEASE")
         cmake_args = [
