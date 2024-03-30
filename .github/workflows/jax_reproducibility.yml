@@ -1,0 +1,45 @@
+name: JAX reproducibility report
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+env:
+  FORCE_COLOR: 3
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Stress test / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+
+      - name: Install PyBaMM
+        run: |
+          pip install -e ."[all,dev,jax]"
+
+      - name: Run tests on ${{ matrix.os }}
+        shell: bash
+        run: |
+          for i in {1..100}
+          do
+            python -m pytest tests/unit/test_solvers/test_jax_bdf_solver.py::TestJaxBDFSolver::test_solver_ >> logs-${{ matrix.os }}.txt || true
+          done
+
+      - name: Upload logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-${{ matrix.os }}-${{ github.run_id }}
+          path: logs-*.txt
