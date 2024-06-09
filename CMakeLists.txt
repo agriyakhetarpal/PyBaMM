@@ -30,7 +30,7 @@ if(NOT MSVC)
 endif()
 
 # casadi seems to compile without the newer versions of std::string
-add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=0)
+# add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=0)
 
 if(NOT PYBIND11_DIR)
   set(PYBIND11_DIR pybind11)
