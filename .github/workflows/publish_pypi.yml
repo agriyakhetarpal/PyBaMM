@@ -130,9 +130,15 @@ jobs:
             bash scripts/install_sundials.sh 6.0.3 6.5.0
           CIBW_BEFORE_BUILD_LINUX: python -m pip install cmake casadi setuptools wheel
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: auditwheel repair -w {dest_dir} {wheel}
+          # Test on amd64, skip test on aarch64 for now
           CIBW_TEST_COMMAND: |
             set -e -x
-            python -c "import pybamm; print(pybamm.IDAKLUSolver())"
+            if [[ "$(uname -m)" == "x86_64" ]]; then
+              python -c "import pybamm; print(pybamm.IDAKLUSolver())"
+            else
+              echo "Skipping test on aarch64"
+              exit 0
+            fi
 
       - name: Upload wheels for Linux
         uses: actions/upload-artifact@v4
@@ -140,6 +146,37 @@ jobs:
           name: wheels_manylinux
           path: ./wheelhouse/*.whl
           if-no-files-found: error
+
+  test_manylinux_aarch64_wheel:
+    name: Test manylinux_aarch64 wheel
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: [
+          ["3.9", "cp39"],
+          ["3.10", "cp310"],
+          ["3.11", "cp311"],
+          ["3.12", "cp312"]
+        ]
+    needs: [build_manylinux_wheels]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python[0] }}
+
+      - name: Download manylinux_aarch64 wheel
+        uses: actions/download-artifact@v4
+        with:
+          name: wheels_manylinux
+          path: wheelhouse
+
+      - name: Install manylinux_aarch64 wheel from wheelhouse according to Python version
+        run: python -m pip install wheelhouse/pybamm-*-${{ matrix.python[1] }}-${{ matrix.python[1] }}-manylinux_2_28_aarch64.whl
+
+      - name: Test manylinux_aarch64 wheel on Ubuntu, i.e., outside Manylinux container
+        run: python -c "import pybamm; print(pybamm.IDAKLUSolver())"
 
   build_macos_wheels:
     name: Wheels (${{ matrix.os }})
