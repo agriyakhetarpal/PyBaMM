@@ -138,13 +138,7 @@ jobs:
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: auditwheel repair -w {dest_dir} {wheel}
           # Test on amd64, skip test on aarch64 for now
           CIBW_TEST_COMMAND: |
-            set -e -x
-            if [[ "$(uname -m)" == "x86_64" ]]; then
-              python -c "import pybamm; print(pybamm.IDAKLUSolver())"
-            else
-              echo "Skipping test on aarch64"
-              exit 0
-            fi
+            python -c "import pybamm; print(pybamm.IDAKLUSolver())"
 
       - name: Upload wheels for Linux
         uses: actions/upload-artifact@v4
